@@ -1,5 +1,5 @@
 ---
-description: "Release-by-release changelog for pydantic-resolve, following semver — major for breaking changes, minor for new features, patch for bug fixes. Most recent: 6.1.1."
+description: "Release-by-release changelog for pydantic-resolve, following semver — major for breaking changes, minor for new features, patch for bug fixes. Most recent: 6.1.2."
 ---
 
 # Changelog
@@ -9,6 +9,11 @@ description: "Release-by-release changelog for pydantic-resolve, following semve
 - **Patch (x.y.Z)**: Bug fixes and minor improvements
 
 ## 6.1
+
+### 6.1.2 (2026-9-22)
+
+- fix:
+  - **class-field annotations are read on Python 3.14** (#309): Python 3.14 (PEP 649/749) computes class annotations lazily and no longer stores `__annotations__` in the class `__dict__` (modules using `from __future__ import annotations` keep the legacy eager dict and were unaffected). `get_class_field_annotations` therefore returned nothing on 3.14 for plain modules, silently disabling loader `_context` detection (`_loader_requires_context` → context never injected, `LoaderContextNotProvidedError` never raised) and `copy_dataloader_kls` param inheritance. `_get_class_own_annotations` now falls back to `annotationlib.get_annotations` on 3.14+ (own-annotations semantics identical to the old `__dict__` read; `Format.FORWARDREF` fallback for unresolvable deferred names). Also relaxes the `get_core_types` order assertions in `tests/utils` to multiset comparison: on 3.14 `typing._tp_cache` deduplicates subscripted generics by set-equality (`List[Union[int, str]] is List[Union[str, int]]`), so union member order follows whichever same-member alias the process materialized first — order is not part of `get_core_types`' contract and no caller depends on it.
 
 ### 6.1.1 (2026-9-22)
 
