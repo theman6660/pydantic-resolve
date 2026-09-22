@@ -1,5 +1,5 @@
 ---
-description: "Release-by-release changelog for pydantic-resolve, following semver — major for breaking changes, minor for new features, patch for bug fixes. Most recent: 6.1.0."
+description: "Release-by-release changelog for pydantic-resolve, following semver — major for breaking changes, minor for new features, patch for bug fixes. Most recent: 6.1.1."
 ---
 
 # Changelog
@@ -9,6 +9,11 @@ description: "Release-by-release changelog for pydantic-resolve, following semve
 - **Patch (x.y.Z)**: Bug fixes and minor improvements
 
 ## 6.1
+
+### 6.1.1 (2026-9-22)
+
+- fix:
+  - **`DefineSubset` extra fields are detected on Python 3.14** (#307): Python 3.14 (PEP 649/749) no longer puts an eager `__annotations__` dict in the raw class namespace handed to a metaclass — it carries a lazy `__annotate_func__` instead, and the annotations only materialize after `type.__new__`. `SubsetMeta` builds the model via `create_model` and never passes the namespace through `type.__new__`, so `_extract_extra_fields_from_namespace` always saw `{}` on 3.14 and silently dropped every field declared directly on a `DefineSubset` class body — including its AutoLoad hidden-FK injection and the "duplicates subset field" validation. `_get_namespace_annotations` now evaluates `__annotate_func__` on 3.14+ (falling back to `Format.FORWARDREF` for names not yet resolvable) and reads `__annotations__` on older versions.
 
 ### 6.1.0 (2026-8-2)
 
